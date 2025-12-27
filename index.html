@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026 정부 지원사업 Watchlist (SBTL v8.3)</title>
+    <title>2026 정부 지원사업 Watchlist (SBTL v8.3 Final)</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -52,13 +52,13 @@
     <script type="text/babel">
         const { useState, useMemo, useEffect } = React;
 
-        // [LIVE] 구글 스프레드시트 연동 (웹에 게시된 CSV 링크)
-        const GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTErH9vagDQpDD-kL-Be6R1GIQullxNOdWSGRTlJLsaM5kM3QVWAKLXeueINGTz8A6tdRg3dIYgLKfg/pub?output=csv";
+        // [LIVE] 구글 스프레드시트 연동 (웹에 게시된 CSV 링크 - v8.3 업데이트)
+        const GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTErH9vagDQpDD-kL-Be6R1GIQullxNOdWSGRTlJLsaM5kM3QVWAKLXeueINGTz8A6tdRg3dIYgLKfg/pub?gid=0&single=true&output=csv";
 
         const PERSONAS = { ALL: '전체', SBTL: 'SBTL 첨단소재 맞춤' };
         const STATUSES = ['전체', '접수중', '마감임박', '접수예정', '마감'];
 
-        // 초기 데이터 (Fallback Data) - 요청하신 전체 데이터 반영 완료
+        // [DATA] 내장 데이터 (구글 시트 연동 실패 시 보여줄 안전장치 - 최신 데이터 반영)
         const RAW_DATA = [
             { id: 801, start: '2026-01-02', end: '2026-01-31', title: '2026년 화성시 중소기업 육성자금 지원사업 (운전/시설자금)', source: '[화성] 지자체·산하기관', url: 'https://platform.hsbiz.or.kr/business/list', category: '금융·자금' },
             { id: 802, start: '2026-01-20', end: '2026-02-14', title: '2026년 화성시 국내외 전시회 참가비 지원사업', source: '[화성] 지자체·산하기관', url: 'https://platform.hsbiz.or.kr/business/list', category: '수출·판로' },
@@ -375,18 +375,29 @@
                 if (GOOGLE_SHEET_URL) {
                     setLoading(true);
                     Papa.parse(GOOGLE_SHEET_URL, {
-                        download: true, header: true, skipEmptyLines: true,
-                        complete: (results) => { 
-                            if (results.data && results.data.length > 0) setExternalData(results.data);
-                            else console.warn('CSV 데이터가 비어있습니다. 기본 데이터를 사용합니다.');
-                            setLoading(false); 
+                        download: true,
+                        header: true,
+                        skipEmptyLines: true, // 빈 줄 무시 옵션 추가
+                        complete: (results) => {
+                            // 데이터가 유효한지 확인 (행 개수가 0보다 커야 함)
+                            if (results.data && results.data.length > 0) {
+                                setExternalData(results.data);
+                            } else {
+                                console.warn('CSV 데이터가 비어있습니다. 기본 데이터를 사용합니다.');
+                            }
+                            setLoading(false);
                         },
-                        error: (err) => { console.error('Error fetching CSV:', err); setLoading(false); }
+                        error: (err) => {
+                            console.error('CSV 데이터를 불러오는 중 오류 발생:', err);
+                            setLoading(false);
+                            // 에러 발생 시에도 기존 상태 유지 (화면이 사라지지 않음)
+                        }
                     });
                 }
             }, []);
 
             const combinedData = useMemo(() => {
+                // 외부 데이터가 존재하고 유효한 경우에만 사용
                 if (externalData.length > 0) {
                     const processed = externalData.map((item, index) => ({
                         id: item.id || item.번호 || `ext-${index}`,
@@ -396,12 +407,15 @@
                         source: item.source || item.소관부처 || item.사업수행기관 || '',
                         url: item.url || item.공고상세URL || '',
                         category: item.category || item.지원분야 || ''
-                    })).filter(item => item.title && item.title.trim() !== '');
+                    })).filter(item => item.title && item.title.trim() !== ''); // 제목이 없는 빈 행 필터링
+                    
                     if (processed.length > 0) return processed;
                 }
+                // 외부 데이터가 없거나 오류 시 기본 데이터(RAW_DATA) 반환
                 return RAW_DATA;
             }, [externalData]);
 
+            // 전체를 맨 앞으로 정렬
             const availableSources = useMemo(() => ['전체', ...[...new Set(combinedData.map(d => d.source))].sort()], [combinedData]);
             const availableCategories = useMemo(() => ['전체', ...[...new Set(combinedData.map(d => d.category))].sort()], [combinedData]);
 
@@ -498,7 +512,7 @@
                                 <div>
                                     <h1 className="text-2xl font-black flex items-center gap-3 text-slate-900 tracking-tight">
                                         <div className="bg-gradient-to-br from-indigo-600 to-violet-600 text-white p-2 rounded-xl shadow-lg shadow-indigo-200"><TrendingUp className="h-6 w-6" /></div>
-                                        <span>2026 정부 지원사업 Watchlist<span className="block text-xs font-semibold text-slate-400 mt-0.5 tracking-normal font-sans">Strategic Roadmap for SBTL Advanced Materials (v8.3)</span></span>
+                                        <span>2026 정부 지원사업 Watchlist<span className="block text-xs font-semibold text-slate-400 mt-0.5 tracking-normal font-sans">Strategic Roadmap for SBTL Advanced Materials (v8.3 Final)</span></span>
                                     </h1>
                                 </div>
                                 <div className="flex gap-3 text-center items-center">
