@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026 정부 지원사업 Watchlist (SBTL v8.3 Final)</title>
+    <title>SBTL Strategic Watchlist 2026</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -11,7 +11,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     
     <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
@@ -23,42 +23,101 @@
     <!-- PapaParse -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans KR', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+                    },
+                    colors: {
+                        slate: {
+                            850: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    },
+                    boxShadow: {
+                        'glow': '0 0 15px rgba(56, 189, 248, 0.3)',
+                        'card': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        body { font-family: 'Roboto', 'Noto Sans KR', sans-serif; background-color: #f8fafc; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        body { 
+            transition: background-color 0.3s ease;
+        }
+        .bg-grid-pattern {
+            background-image: 
+                linear-gradient(to right, rgba(148, 163, 184, 0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(148, 163, 184, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .dark .bg-grid-pattern {
+            background-image: 
+                linear-gradient(to right, rgba(148, 163, 184, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(148, 163, 184, 0.05) 1px, transparent 1px);
+        }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+        .dark .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tech-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .tech-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -10px rgba(37, 99, 235, 0.15);
+        }
+        .dark .tech-card:hover {
+            box-shadow: 0 10px 30px -10px rgba(56, 189, 248, 0.1);
+            border-color: #3b82f6;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
-        .memo-area { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
-        .memo-area:focus-within { background-color: #fff; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1); }
-        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .tabular-nums { font-variant-numeric: tabular-nums; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); background-color: #e2e8f0; gap: 1px; border: 1px solid #e2e8f0; border-radius: 0 0 16px 16px; overflow: hidden; }
-        .calendar-cell { background-color: white; min-height: 140px; padding: 8px; display: flex; flex-direction: column; cursor: pointer; transition: background-color 0.2s; }
-        .calendar-cell:hover { background-color: #f8fafc; }
-        .calendar-header { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: 800; background-color: #fff; border-bottom: 1px solid #e2e8f0; padding: 16px 0; font-size: 0.95rem; color: #64748b; border-radius: 16px 16px 0 0; }
-        @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .toast-enter { animation: slideUp 0.3s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes zoomIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .modal-overlay { animation: fadeIn 0.2s ease-out; }
-        .modal-content { animation: zoomIn 0.2s ease-out; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 3px; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #475569; }
+        
+        .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .tech-badge {
+            font-family: 'Inter', sans-serif;
+            letter-spacing: -0.025em;
+        }
     </style>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 bg-grid-pattern min-h-screen">
     <div id="root"></div>
 
     <script type="text/babel">
         const { useState, useMemo, useEffect } = React;
 
-        // [LIVE] 구글 스프레드시트 연동 (웹에 게시된 CSV 링크 - v8.3 업데이트)
+        // [LIVE] 구글 스프레드시트 연동
         const GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTErH9vagDQpDD-kL-Be6R1GIQullxNOdWSGRTlJLsaM5kM3QVWAKLXeueINGTz8A6tdRg3dIYgLKfg/pub?gid=0&single=true&output=csv";
+        
+        // [SHARED CALENDAR] 공유 캘린더 링크
+        const SHARED_CALENDAR_URL = "https://calendar.google.com/calendar/embed?src=19fce734cc87c91885adab920252ab64879bb99726ddd46165eb0e2bf783727f%40group.calendar.google.com&ctz=Asia%2FSeoul";
 
         const PERSONAS = { ALL: '전체', SBTL: 'SBTL 첨단소재 맞춤' };
         const STATUSES = ['전체', '접수중', '마감임박', '접수예정', '마감'];
 
-        // [DATA] 내장 데이터 (구글 시트 연동 실패 시 보여줄 안전장치 - 최신 데이터 반영)
+        // [DATA] Static Backup (최후의 수단 - Factory Reset용)
         const RAW_DATA = [
             { id: 801, start: '2026-01-02', end: '2026-01-31', title: '2026년 화성시 중소기업 육성자금 지원사업 (운전/시설자금)', source: '[화성] 지자체·산하기관', url: 'https://platform.hsbiz.or.kr/business/list', category: '금융·자금' },
             { id: 802, start: '2026-01-20', end: '2026-02-14', title: '2026년 화성시 국내외 전시회 참가비 지원사업', source: '[화성] 지자체·산하기관', url: 'https://platform.hsbiz.or.kr/business/list', category: '수출·판로' },
@@ -152,514 +211,587 @@
             { id: 514, start: '2025-11-21', end: '2025-12-11', title: '벤처투자회사 등록 및 관리규정 일부개정안 행정예고', source: '중소벤처기업부', url: 'https://www.bizinfo.go.kr/web/lay1/bbs/S1T122C130/AY/115/view.do?article_seq=86117', category: '금융·자금' },
             { id: 515, start: '2025-11-21', end: '2025-12-11', title: '창업기획자 등록 및 관리규정 일부개정안 행정예고', source: '중소벤처기업부', url: 'https://www.bizinfo.go.kr/web/lay1/bbs/S1T122C130/AY/115/view.do?article_seq=86116', category: '창업·입주' },
             { id: 516, start: '2025-11-21', end: '2025-12-11', title: '개인투자조합 등록 및 투자확인서 발급규정 일부개정안 행정예고', source: '중소벤처기업부', url: 'https://www.bizinfo.go.kr/web/lay1/bbs/S1T122C130/AY/115/view.do?article_seq=86115', category: '금융·자금' },
-            { id: 517, start: '2025-11-19', end: '2025-11-19', title: '중소기업자간 경쟁제품 직접생산 확인기준 일부개정 고시', source: '중소벤처기업부', url: 'https://www.bizinfo.go.kr/web/lay1/bbs/S1T122C130/AY/115/view.do?article_seq=86080', category: '수출·판로' },
+            { id: 517, start: '2025-11-21', end: '2025-11-19', title: '중소기업자간 경쟁제품 직접생산 확인기준 일부개정 고시', source: '중소벤처기업부', url: 'https://www.bizinfo.go.kr/web/lay1/bbs/S1T122C130/AY/115/view.do?article_seq=86080', category: '수출·판로' },
             { id: 518, start: '2025-11-17', end: '2025-12-27', title: '벤처기업육성에 관한 특별법 시행령 일부개정령(안) 입법예고', source: '중소벤처기업부', url: 'https://www.bizinfo.go.kr/web/lay1/bbs/S1T122C130/AY/115/view.do?article_seq=86072', category: '정책·규제' },
             { id: 519, start: '2025-11-14', end: '2025-11-14', title: '중소벤처기업부 규제예보 리스트 11월 1차 입법예고', source: '중소벤처기업부', url: 'https://www.bizinfo.go.kr/web/lay1/bbs/S1T122C130/AY/115/view.do?article_seq=86037', category: '정책·규제' },
         ];
 
-        // --- Icons ---
-        const IconBase = ({ children, className, ...props }) => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>{children}</svg>;
-        const Search = (props) => <IconBase {...props}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></IconBase>;
-        const CalendarIcon = (props) => <IconBase {...props}><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></IconBase>;
-        const ExternalLink = (props) => <IconBase {...props}><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></IconBase>;
-        const LayoutGrid = (props) => <IconBase {...props}><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></IconBase>;
-        const List = (props) => <IconBase {...props}><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></IconBase>;
-        const Sparkles = (props) => <IconBase {...props}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></IconBase>;
-        const TrendingUp = (props) => <IconBase {...props}><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></IconBase>;
-        const ChevronDown = (props) => <IconBase {...props}><path d="m6 9 6 6 6-6"/></IconBase>;
-        const RefreshCw = (props) => <IconBase {...props}><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></IconBase>;
-        const Star = (props) => <IconBase {...props}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></IconBase>;
-        const FileSpreadsheet = (props) => <IconBase {...props}><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></IconBase>;
-        const Edit3 = (props) => <IconBase {...props}><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></IconBase>;
-        const XIcon = (props) => <IconBase {...props}><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></IconBase>;
-        const CopyIcon = (props) => <IconBase {...props}><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></IconBase>;
-        const BellIcon = (props) => <IconBase {...props}><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></IconBase>;
+        // --- Icons (Lucide Style) - Fixed with Children ---
+        const Icon = ({ className, children, ...props }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>
+                {children}
+            </svg>
+        );
 
-        // 유틸리티
+        const Icons = {
+            Search: (p) => <Icon {...p}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></Icon>,
+            Calendar: (p) => <Icon {...p}><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></Icon>,
+            CalendarPlus: (p) => <Icon {...p}><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M10 16h4"/><path d="M12 14v4"/></Icon>,
+            ExternalLink: (p) => <Icon {...p}><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></Icon>,
+            Link: (p) => <Icon {...p}><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></Icon>,
+            Grid: (p) => <Icon {...p}><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></Icon>,
+            List: (p) => <Icon {...p}><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></Icon>,
+            Star: (p) => <Icon {...p}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></Icon>,
+            Download: (p) => <Icon {...p}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></Icon>,
+            ChevronDown: (p) => <Icon {...p}><path d="m6 9 6 6 6-6"/></Icon>,
+            Refresh: (p) => <Icon {...p}><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></Icon>,
+            Bell: (p) => <Icon {...p}><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></Icon>,
+            Briefcase: (p) => <Icon {...p}><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></Icon>,
+            Building: (p) => <Icon {...p}><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></Icon>,
+            Copy: (p) => <Icon {...p}><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></Icon>,
+            X: (p) => <Icon {...p}><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></Icon>,
+            Zap: (p) => <Icon {...p}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></Icon>,
+            Sparkles: (p) => <Icon {...p}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></Icon>,
+            Moon: (p) => <Icon {...p}><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></Icon>,
+            Sun: (p) => <Icon {...p}><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></Icon>,
+            Layers: (p) => <Icon {...p}><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></Icon>,
+        };
+
+        // ... (Utilities, Modal, CalendarView, ItemCard - Same as previous) ...
+        const cleanDate = (dateStr) => (!dateStr ? '' : dateStr.replace(/\./g, '-'));
         const getToday = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
         const getDaysDiff = (targetDate) => {
             const today = getToday();
-            const target = new Date(targetDate);
-            const diffTime = target - today;
-            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const target = new Date(cleanDate(targetDate));
+            if(isNaN(target.getTime())) return 999;
+            return Math.ceil((target - today) / (1000 * 60 * 60 * 24));
         };
         const getStatus = (start, end) => {
             const today = getToday();
-            const sDate = new Date(start);
-            const eDate = new Date(end);
-            if (eDate < sDate && eDate.getFullYear() < 2000) return { label: '일정 확인 필요', color: 'bg-slate-50 text-slate-500 border-slate-200' };
-            if (sDate > today) return { label: '접수예정', color: 'bg-amber-50 text-amber-700 border-amber-200 ring-1 ring-amber-100' };
-            if (eDate < today) return { label: '마감됨', color: 'bg-slate-100 text-slate-400 border-slate-200' };
+            const sDate = new Date(cleanDate(start));
+            const eDate = new Date(cleanDate(end));
+            if (isNaN(eDate.getTime())) return { label: 'TBD', color: 'text-slate-400 bg-slate-100 border-slate-200 dark:bg-slate-800 dark:border-slate-700' };
+            if (sDate > today) return { label: 'UPCOMING', color: 'text-blue-600 bg-blue-50 border-blue-200 dark:bg-blue-900/30 dark:border-blue-800 dark:text-blue-400' };
+            if (eDate < today) return { label: 'CLOSED', color: 'text-slate-500 bg-slate-100 border-slate-200 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-500' };
             const dDay = getDaysDiff(end);
-            if (dDay <= 7) return { label: `마감임박 (D-${dDay})`, color: 'bg-rose-50 text-rose-600 border-rose-200 ring-1 ring-rose-100 animate-pulse font-bold' };
-            return { label: `접수중 (D-${dDay})`, color: 'bg-emerald-50 text-emerald-600 border-emerald-200 ring-1 ring-emerald-100' };
+            if (dDay <= 7) return { label: `URGENT D-${dDay}`, color: 'text-rose-600 bg-rose-50 border-rose-200 animate-pulse font-bold dark:bg-rose-900/30 dark:border-rose-800 dark:text-rose-400' };
+            return { label: `OPEN D-${dDay}`, color: 'text-emerald-600 bg-emerald-50 border-emerald-200 dark:bg-emerald-900/30 dark:border-emerald-800 dark:text-emerald-400' };
         };
-        const formatDate = (dateString, displayDate) => {
-            if (displayDate) return displayDate;
-            if(!dateString) return '미정';
-            const date = new Date(dateString);
+        const formatDate = (dateString) => {
+            if(!dateString) return '-';
+            const date = new Date(cleanDate(dateString));
             if(isNaN(date.getTime())) return dateString; 
             return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
         };
-        const getLinkInfo = (item) => {
-            const hasLink = item.url && item.url.trim() !== '' && item.url !== '#';
-            if (hasLink) return { url: item.url, type: 'direct' };
-            return { url: `https://www.google.com/search?q=${encodeURIComponent(item.title + ' 공고')}`, type: 'search' };
-        };
         const getGoogleCalendarUrl = (item) => {
             if (!item.start || !item.end) return '#';
-            const startStr = new Date(item.start).toISOString().replace(/-|:|\.\d\d\d/g, "").slice(0, 8);
-            const endRaw = new Date(item.end);
-            endRaw.setDate(endRaw.getDate() + 1);
+            const startStr = new Date(cleanDate(item.start)).toISOString().replace(/-|:|\.\d\d\d/g, "").slice(0, 8);
+            const endRaw = new Date(cleanDate(item.end)); endRaw.setDate(endRaw.getDate() + 1);
             const endStr = endRaw.toISOString().replace(/-|:|\.\d\d\d/g, "").slice(0, 8);
-            return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(`[마감] ${item.title}`)}&dates=${startStr}/${endStr}&details=${encodeURIComponent(`URL: ${item.url}\n소관부처: ${item.source}\n지원분야: ${item.category}`)}`;
+            return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(`[마감] ${item.title}`)}&dates=${startStr}/${endStr}&details=${encodeURIComponent(`URL: ${item.url}\n소관: ${item.source}`)}`;
         };
 
-        const DailyDetailModal = ({ isOpen, onClose, date, items, toggleFavorite, favorites, downloadICS, onCopy }) => {
+        const Modal = ({ isOpen, onClose, title, children }) => {
             if (!isOpen) return null;
             return (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-opacity modal-overlay" onClick={onClose}>
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[80vh] flex flex-col overflow-hidden modal-content" onClick={e => e.stopPropagation()}>
-                        <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                            <div>
-                                <h3 className="text-lg font-bold text-slate-800">{date ? `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일` : ''}</h3>
-                                <p className="text-xs text-slate-500 font-medium mt-0.5">총 <span className="text-indigo-600 font-bold">{items.length}</span>개의 마감 공고가 있습니다.</p>
-                            </div>
-                            <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600"><XIcon className="w-5 h-5" /></button>
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={onClose}>
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden animate-fade-in border border-slate-200 dark:border-slate-700" onClick={e => e.stopPropagation()}>
+                        <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
+                            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">{title}</h3>
+                            <button onClick={onClose} className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors text-slate-500 dark:text-slate-400"><Icons.X className="w-5 h-5" /></button>
                         </div>
-                        <div className="overflow-y-auto p-5 space-y-4 custom-scrollbar">
-                            {items.length === 0 ? (<div className="text-center py-10 text-slate-400"><p>마감되는 공고가 없습니다.</p></div>) : (
-                                items.map(item => {
-                                    const isFavorite = favorites.includes(item.id);
-                                    const linkInfo = getLinkInfo(item);
-                                    return (
-                                        <div key={item.id} className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow group">
-                                            <div className="flex justify-between items-start gap-3 mb-2">
-                                                <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">{item.source}</span>
-                                                <div className="flex gap-1">
-                                                    <button onClick={() => onCopy(item)} className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-slate-600 transition-colors" title="복사"><CopyIcon className="w-4 h-4" /></button>
-                                                    <a href={getGoogleCalendarUrl(item)} target="_blank" rel="noreferrer" className="p-1.5 hover:bg-indigo-50 rounded-lg text-slate-400 hover:text-indigo-600 transition-colors" title="구글 캘린더 등록"><span className="text-xs font-bold">G</span></a>
-                                                    <button onClick={(e) => downloadICS(item, e)} className="p-1.5 hover:bg-indigo-50 rounded-lg text-slate-400 hover:text-indigo-600 transition-colors" title="ICS 다운로드"><CalendarIcon className="w-4 h-4" /></button>
-                                                    <button onClick={(e) => toggleFavorite(item.id, e)} className={`p-1.5 hover:bg-amber-50 rounded-lg transition-colors ${isFavorite ? 'text-amber-400' : 'text-slate-300 hover:text-amber-400'}`} title="즐겨찾기"><Star className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} /></button>
-                                                </div>
-                                            </div>
-                                            <a href={linkInfo.url} target="_blank" rel="noreferrer" className="block"><h4 className="font-bold text-slate-800 text-sm leading-snug mb-2 hover:text-indigo-600 transition-colors">{item.title}</h4><div className="flex items-center gap-2 text-xs text-slate-500"><span className="text-indigo-600 font-medium bg-indigo-50 px-1.5 py-0.5 rounded">{item.category}</span></div></a>
-                                        </div>
-                                    );
-                                })
-                            )}
-                        </div>
+                        <div className="overflow-y-auto p-0 custom-scrollbar flex-1">{children}</div>
                     </div>
                 </div>
             );
         };
 
-        const CalendarView = ({ data, favorites, toggleFavorite, downloadICS, onCopy }) => {
+        const CalendarView = ({ data, favorites, toggleFavorite }) => {
             const [currentDate, setCurrentDate] = useState(new Date());
-            const [modalOpen, setModalOpen] = useState(false);
-            const [selectedDate, setSelectedDate] = useState(null);
-            const [selectedItems, setSelectedItems] = useState([]);
+            const [selectedDateData, setSelectedDateData] = useState(null);
             
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
-            const firstDayOfMonth = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const firstDay = new Date(year, month, 1).getDay();
+            const lastDate = new Date(year, month + 1, 0).getDate();
             
-            const prevMonth = () => setCurrentDate(new Date(year, month - 1, 1));
-            const nextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
+            const days = [];
+            for (let i = 0; i < firstDay; i++) days.push(<div key={`empty-${i}`} className="min-h-[100px] bg-slate-50/50 dark:bg-slate-900/50 border-r border-b border-slate-200 dark:border-slate-800" />);
             
-            const handleDateClick = (year, month, day, items) => {
-                if (items.length === 0) return; 
-                const date = new Date(year, month, day);
-                setSelectedDate(date);
-                setSelectedItems(items);
-                setModalOpen(true);
-            };
-
-            const renderDays = () => {
-                const days = [];
-                for (let i = 0; i < firstDayOfMonth; i++) {
-                    days.push(<div key={`prev-empty-${i}`} className="calendar-cell bg-slate-50/50 min-h-[120px]"></div>);
-                }
-                for (let d = 1; d <= daysInMonth; d++) {
-                    const currentDayStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-                    const itemsEnding = data.filter(item => item.end === currentDayStr);
-                    const todayDate = new Date();
-                    const isToday = todayDate.getFullYear() === year && todayDate.getMonth() === month && todayDate.getDate() === d;
-                    const dayOfWeek = new Date(year, month, d).getDay();
-                    const isSunday = dayOfWeek === 0;
-                    const isSaturday = dayOfWeek === 6;
-                    
-                    let numColor = 'text-slate-700';
-                    if (isSunday) numColor = 'text-rose-500';
-                    if (isSaturday) numColor = 'text-blue-500';
-                    if (isToday) numColor = 'text-indigo-700';
-                    const cellBg = isToday ? 'bg-indigo-50/60 ring-1 ring-inset ring-indigo-200' : 'bg-white hover:bg-slate-50';
-
-                    days.push(
-                        <div key={d} onClick={() => itemsEnding.length > 0 && handleDateClick(year, month, d, itemsEnding)} className={`calendar-cell relative min-h-[120px] p-2 flex flex-col gap-1 transition-all duration-200 ${cellBg} ${itemsEnding.length > 0 ? 'cursor-pointer' : ''}`}>
-                            <div className="flex justify-between items-start mb-1">
-                                <div className="flex items-center gap-1">
-                                    <span className={`text-sm font-bold w-7 h-7 flex items-center justify-center rounded-full ${isToday ? 'bg-indigo-600 text-white shadow-sm' : numColor}`}>{d}</span>
-                                    {isToday && <span className="text-[10px] font-bold text-indigo-600 bg-white px-1.5 py-0.5 rounded border border-indigo-100 shadow-sm">Today</span>}
-                                </div>
-                            </div>
-                            <div className="flex-1 flex flex-col gap-1 overflow-hidden">
-                                {itemsEnding.slice(0, 3).map(item => {
-                                    const status = getStatus(item.start, item.end);
-                                    let dotColor = 'bg-slate-400';
-                                    let textColor = 'text-slate-600';
-                                    if(status.label.includes('마감임박')) { dotColor = 'bg-rose-500'; textColor = 'text-rose-700 font-medium'; }
-                                    else if(status.label.includes('접수중')) { dotColor = 'bg-emerald-500'; }
-                                    else if(status.label.includes('접수예정')) { dotColor = 'bg-amber-500'; }
-                                    return (
-                                        <div key={item.id} className="flex items-center gap-1.5 px-1 py-0.5 rounded hover:bg-slate-100 transition-colors">
-                                            <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${dotColor}`}></div>
-                                            <span className={`text-[11px] truncate leading-tight ${textColor}`}>{item.title}</span>
-                                        </div>
-                                    );
-                                })}
-                                {itemsEnding.length > 3 && (<div className="text-[10px] text-slate-400 pl-2 font-medium hover:text-indigo-500">+ {itemsEnding.length - 3}개 더보기</div>)}
-                            </div>
+            for (let d = 1; d <= lastDate; d++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                const items = data.filter(item => cleanDate(item.end) === dateStr);
+                const isToday = new Date().toDateString() === new Date(year, month, d).toDateString();
+                
+                days.push(
+                    <div key={d} onClick={() => items.length > 0 && setSelectedDateData({ date: `${year}.${month+1}.${d}`, items })} 
+                         className={`min-h-[100px] p-2 border-r border-b border-slate-200 dark:border-slate-800 transition-colors ${items.length > 0 ? 'cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800' : 'bg-white dark:bg-slate-900'} ${isToday ? 'bg-blue-50/30 dark:bg-blue-900/20' : ''}`}>
+                        <div className="flex justify-between items-start">
+                            <span className={`text-sm font-bold w-6 h-6 flex items-center justify-center rounded-full ${isToday ? 'bg-blue-600 text-white' : 'text-slate-700 dark:text-slate-300'}`}>{d}</span>
+                            {items.length > 0 && <span className="text-[10px] font-bold text-slate-400">{items.length}건</span>}
                         </div>
-                    );
-                }
-                const totalCells = days.length;
-                const remaining = 7 - (totalCells % 7);
-                if (remaining < 7) {
-                    for (let i = 0; i < remaining; i++) {
-                        days.push(<div key={`next-empty-${i}`} className="calendar-cell bg-slate-50/50 min-h-[120px]"></div>);
-                    }
-                }
-                return days;
-            };
+                        <div className="mt-1 space-y-1">
+                            {items.slice(0, 2).map(item => (
+                                <div key={item.id} className="text-[10px] px-1.5 py-0.5 rounded bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-sm truncate text-slate-600 dark:text-slate-400">
+                                    {item.title}
+                                </div>
+                            ))}
+                            {items.length > 2 && <div className="text-[10px] text-blue-500 font-medium pl-1">+{items.length - 2} 더보기</div>}
+                        </div>
+                    </div>
+                );
+            }
 
             return (
-                <>
-                    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden ring-1 ring-slate-900/5">
-                        <div className="flex items-center justify-between p-6 border-b border-slate-200 bg-white">
-                            <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-3"><span className="bg-indigo-50 text-indigo-600 p-2 rounded-lg shadow-sm"><CalendarIcon className="w-6 h-6" /></span>{year}년 {month + 1}월 일정</h2>
-                            <div className="flex gap-1 bg-slate-100 p-1 rounded-xl">
-                                <button onClick={prevMonth} className="px-3 py-1.5 hover:bg-white hover:shadow-sm rounded-lg text-slate-600 font-medium text-sm transition-all">◀</button>
-                                <button onClick={() => setCurrentDate(new Date())} className="px-4 py-1.5 bg-white shadow-sm rounded-lg text-indigo-600 font-bold text-sm transition-all">이번 달</button>
-                                <button onClick={nextMonth} className="px-3 py-1.5 hover:bg-white hover:shadow-sm rounded-lg text-slate-600 font-medium text-sm transition-all">▶</button>
-                            </div>
+                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+                    <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-white dark:bg-slate-900">
+                        <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2"><Icons.Calendar className="w-5 h-5 text-blue-600"/> {year}년 {month + 1}월</h2>
+                        <div className="flex gap-1">
+                            <button onClick={() => setCurrentDate(new Date(year, month - 1))} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-500">◀</button>
+                            <button onClick={() => setCurrentDate(new Date())} className="px-3 py-1 text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700">오늘</button>
+                            <button onClick={() => setCurrentDate(new Date(year, month + 1))} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-500">▶</button>
                         </div>
-                        <div className="grid grid-cols-7 border-b border-slate-200 bg-slate-50/80">
-                            {['일', '월', '화', '수', '목', '금', '토'].map((day, i) => (<div key={day} className={`text-center py-3 text-xs font-bold uppercase tracking-wider ${i === 0 ? 'text-rose-500' : i === 6 ? 'text-blue-500' : 'text-slate-500'}`}>{day}</div>))}
-                        </div>
-                        <div className="grid grid-cols-7 bg-slate-200 gap-px border-b border-slate-200">{renderDays()}</div>
-                        <div className="bg-slate-50 p-2 text-center text-xs text-slate-400 font-medium">* 날짜를 클릭하면 해당 일자의 상세 공고를 확인할 수 있습니다.</div>
                     </div>
-                    <DailyDetailModal isOpen={modalOpen} onClose={() => setModalOpen(false)} date={selectedDate} items={selectedItems} toggleFavorite={toggleFavorite} favorites={favorites} downloadICS={downloadICS} onCopy={onCopy} />
-                </>
+                    <div className="grid grid-cols-7 text-center border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950">
+                        {['일', '월', '화', '수', '목', '금', '토'].map((day, i) => (
+                            <div key={day} className={`py-3 text-xs font-bold ${i === 0 ? 'text-rose-500' : 'text-slate-500 dark:text-slate-400'}`}>{day}</div>
+                        ))}
+                    </div>
+                    <div className="grid grid-cols-7 bg-slate-100 dark:bg-slate-800 gap-px border-l border-t border-slate-200 dark:border-slate-800">{days}</div>
+                    
+                    <Modal isOpen={!!selectedDateData} onClose={() => setSelectedDateData(null)} title={`${selectedDateData?.date} 마감 공고`}>
+                        <div className="divide-y divide-slate-100 dark:divide-slate-800">
+                            {selectedDateData?.items.map(item => (
+                                <div key={item.id} className="p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                                    <div className="flex gap-2 mb-1">
+                                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">{item.source}</span>
+                                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">{item.category}</span>
+                                    </div>
+                                    <a href={item.url} target="_blank" className="text-sm font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 block mb-2">{item.title}</a>
+                                    <div className="flex justify-end gap-2">
+                                        <button onClick={() => toggleFavorite(item.id)} className={`p-1.5 rounded-md border ${favorites.includes(item.id) ? 'bg-amber-50 border-amber-200 text-amber-500 dark:bg-amber-900/30 dark:border-amber-800 dark:text-amber-400' : 'border-slate-200 dark:border-slate-700 text-slate-400'}`}><Icons.Star className="w-3.5 h-3.5" /></button>
+                                        <a href={item.url} target="_blank" className="p-1.5 rounded-md border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-blue-600 hover:border-blue-200"><Icons.ExternalLink className="w-3.5 h-3.5" /></a>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </Modal>
+                </div>
             );
         };
 
+        const ItemCard = ({ item, status, isFav, toggleFav, copyLink }) => (
+            <div className="tech-card rounded-xl flex flex-col group relative overflow-hidden bg-white dark:bg-slate-900 border dark:border-slate-800">
+                {/* Status Bar */}
+                <div className={`h-1 w-full ${status.label.includes('URGENT') ? 'bg-gradient-to-r from-rose-500 to-orange-500' : 'bg-gradient-to-r from-blue-500 to-cyan-400'}`}></div>
+                
+                <div className="p-5 flex-1 flex flex-col">
+                    <div className="flex justify-between items-start mb-3">
+                        <span className={`tech-badge inline-flex items-center px-2 py-1 rounded text-[10px] font-bold border ${status.color}`}>
+                            {status.label}
+                        </span>
+                        <div className="flex gap-1">
+                            <button onClick={() => copyLink(item)} className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-400 transition-colors" title="링크 복사"><Icons.Copy className="w-3.5 h-3.5" /></button>
+                            <button onClick={() => toggleFav(item.id)} className={`p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors ${isFav ? 'text-amber-400' : 'text-slate-400'}`} title="즐겨찾기"><Icons.Star className={`w-3.5 h-3.5 ${isFav ? 'fill-current' : ''}`} /></button>
+                            <a href={getGoogleCalendarUrl(item)} target="_blank" className="p-1.5 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors" title="내 캘린더에 일정 등록"><Icons.CalendarPlus className="w-3.5 h-3.5" /></a>
+                            <a href={SHARED_CALENDAR_URL} target="_blank" className="p-1.5 hover:bg-pink-50 dark:hover:bg-pink-900/30 rounded text-slate-400 hover:text-pink-600 dark:hover:text-pink-400 transition-colors" title="공유 캘린더 보기"><Icons.Link className="w-3.5 h-3.5" /></a>
+                        </div>
+                    </div>
+                    
+                    <h3 className="text-base font-bold text-slate-800 dark:text-slate-200 leading-snug mb-3 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        <a href={item.url} target="_blank">{item.title}</a>
+                    </h3>
+                    
+                    <div className="mt-auto space-y-3">
+                        <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 font-medium">
+                            <Icons.Building className="w-3.5 h-3.5" />
+                            <span className="truncate">{item.source}</span>
+                        </div>
+                        
+                        <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                            <div>
+                                <div className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Due Date</div>
+                                <div className={`font-mono text-sm font-bold ${status.label.includes('URGENT') ? 'text-rose-600 dark:text-rose-400' : 'text-slate-700 dark:text-slate-300'}`}>
+                                    {formatDate(item.end)}
+                                </div>
+                            </div>
+                            <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded border border-blue-100 dark:border-blue-800">
+                                {item.category}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+
         const App = () => {
+            // ... (State, Effects - Modified fetch logic below) ...
             const [searchTerm, setSearchTerm] = useState('');
-            const [selectedSource, setSelectedSource] = useState('전체');
-            const [selectedCategory, setSelectedCategory] = useState('전체');
-            const [selectedStatus, setSelectedStatus] = useState('전체');
-            const [selectedPersona, setSelectedPersona] = useState(PERSONAS.ALL);
-            const [mainTab, setMainTab] = useState('list');
+            const [filters, setFilters] = useState({ source: '전체', category: '전체', status: '전체' });
             const [viewMode, setViewMode] = useState('grid');
-            const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
-            const [toast, setToast] = useState({ show: false, message: '' });
-            const [favorites, setFavorites] = useState(() => { const saved = localStorage.getItem('sbtl_favorites'); return saved ? JSON.parse(saved) : []; });
-            const [memos, setMemos] = useState(() => { const saved = localStorage.getItem('sbtl_memos'); return saved ? JSON.parse(saved) : {}; });
-            const [externalData, setExternalData] = useState([]);
-            const [loading, setLoading] = useState(false);
+            const [isPersonaSBTL, setIsPersonaSBTL] = useState(false);
+            const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('favs') || '[]'));
+            const [showFavOnly, setShowFavOnly] = useState(false);
+            const [data, setData] = useState([]);
+            const [loading, setLoading] = useState(true);
+            const [dataSource, setDataSource] = useState('INIT');
+            const [toast, setToast] = useState(null);
+            const [lastUpdated, setLastUpdated] = useState(null);
+            const [isDark, setIsDark] = useState(() => localStorage.getItem('theme') === 'dark');
+            const [groupByPhase, setGroupByPhase] = useState(false);
 
             useEffect(() => {
-                if (GOOGLE_SHEET_URL) {
+                if (isDark) document.documentElement.classList.add('dark');
+                else document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            }, [isDark]);
+
+            // --- SMART CACHING FETCH LOGIC ---
+            useEffect(() => {
+                const load = async () => {
                     setLoading(true);
-                    Papa.parse(GOOGLE_SHEET_URL, {
-                        download: true,
-                        header: true,
-                        skipEmptyLines: true, // 빈 줄 무시 옵션 추가
-                        complete: (results) => {
-                            // 데이터가 유효한지 확인 (행 개수가 0보다 커야 함)
-                            if (results.data && results.data.length > 0) {
-                                setExternalData(results.data);
-                            } else {
-                                console.warn('CSV 데이터가 비어있습니다. 기본 데이터를 사용합니다.');
-                            }
-                            setLoading(false);
-                        },
-                        error: (err) => {
-                            console.error('CSV 데이터를 불러오는 중 오류 발생:', err);
-                            setLoading(false);
-                            // 에러 발생 시에도 기존 상태 유지 (화면이 사라지지 않음)
+                    
+                    const fetchWithProxy = async (proxyUrl) => {
+                        const res = await fetch(proxyUrl);
+                        if (!res.ok) throw new Error('Network response was not ok');
+                        return await res.text();
+                    };
+
+                    const processData = (csv, source) => {
+                        const parsed = Papa.parse(csv, { header: true, skipEmptyLines: true });
+                        if (parsed.data.length > 0) {
+                            const processed = parsed.data.map((item, idx) => ({
+                                id: item.id || `row-${idx}`,
+                                title: item.공고명 || item.title,
+                                source: item.소관부처 || item.source,
+                                category: item.지원분야 || item.category,
+                                start: cleanDate(item.신청시작일자 || item.start),
+                                end: cleanDate(item.신청종료일자 || item.end),
+                                url: item.공고상세URL || item.url || '#'
+                            })).filter(i => i.title);
+                            
+                            // Success! Save to Cache
+                            localStorage.setItem('sbtl_cache_data', JSON.stringify(processed));
+                            localStorage.setItem('sbtl_cache_time', new Date().toISOString());
+                            
+                            setData(processed);
+                            setDataSource(source);
+                            setLastUpdated(new Date());
+                        } else {
+                            throw new Error('No Data');
                         }
-                    });
-                }
+                    };
+
+                    const useBackup = () => {
+                        // 1. Try LocalStorage Cache
+                        const cached = localStorage.getItem('sbtl_cache_data');
+                        const cachedTime = localStorage.getItem('sbtl_cache_time');
+                        
+                        if (cached) {
+                            console.log("Using LocalStorage Cache");
+                            setData(JSON.parse(cached));
+                            setDataSource('CACHE');
+                            setLastUpdated(cachedTime ? new Date(cachedTime) : new Date());
+                        } else {
+                            // 2. Fallback to Hardcoded RAW_DATA
+                            console.warn("Using Hardcoded Backup");
+                            setData(RAW_DATA.map(i => ({...i, start: cleanDate(i.start), end: cleanDate(i.end)})));
+                            setDataSource('BACKUP');
+                            setLastUpdated(new Date());
+                        }
+                    };
+
+                    try {
+                        // 1. Direct Try
+                        const res = await fetch(GOOGLE_SHEET_URL + '&t=' + Date.now());
+                        if (!res.ok) throw new Error('Direct fetch failed');
+                        const csv = await res.text();
+                        processData(csv, 'LIVE');
+                    } catch (e) {
+                        console.warn("Direct fetch failed", e);
+                        try {
+                            // 2. Proxy 1: AllOrigins
+                            const csv = await fetchWithProxy(`https://api.allorigins.win/raw?url=${encodeURIComponent(GOOGLE_SHEET_URL)}`);
+                            processData(csv, 'PROXY (A)');
+                        } catch (err2) {
+                            console.warn("Proxy A failed", err2);
+                            try {
+                                // 3. Proxy 2: CORS Proxy IO
+                                const csv = await fetchWithProxy(`https://corsproxy.io/?${encodeURIComponent(GOOGLE_SHEET_URL)}`);
+                                processData(csv, 'PROXY (B)');
+                            } catch (err3) {
+                                console.warn("All fetches failed", err3);
+                                useBackup();
+                            }
+                        }
+                    } finally {
+                        setLoading(false);
+                    }
+                };
+                load();
+            }, []);
+            // ... (Rest of App component same as previous) ...
+
+            // Save Favs
+            useEffect(() => localStorage.setItem('favs', JSON.stringify(favorites)), [favorites]);
+
+            // Utils
+            const handleToast = (msg) => { setToast(msg); setTimeout(() => setToast(null), 2000); };
+            const toggleFav = (id) => {
+                setFavorites(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]);
+                handleToast(favorites.includes(id) ? "즐겨찾기 해제" : "즐겨찾기 추가됨");
+            };
+            const copyLink = (item) => {
+                const text = `${item.title}\n마감: ${item.end}\n링크: ${item.url}`;
+                navigator.clipboard.writeText(text);
+                handleToast("클립보드 복사 완료");
+            };
+
+            // Smart Grouping Logic
+            const getPhase = (category) => {
+                if (['R&D·기술', '정책·규제', '행사·네트워킹'].includes(category)) return 'Phase 1: 미래 기술 확보 (R&D/기획)';
+                if (['창업·입주', '기술도입', '인력·교육', '인증', '지역특화'].includes(category)) return 'Phase 2: 인프라 및 역량 강화 (Build-up)';
+                if (['금융·자금', '수출·판로'].includes(category)) return 'Phase 3: 시장 확장 및 도약 (Scale-up)';
+                return 'Other (기타 지원)';
+            };
+
+            // Filter Logic
+            const filteredData = useMemo(() => {
+                return data.filter(item => {
+                    if (showFavOnly && !favorites.includes(item.id)) return false;
+                    if (searchTerm && !item.title.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+                    if (filters.source !== '전체' && item.source !== filters.source) return false;
+                    if (filters.category !== '전체' && item.category !== filters.category) return false;
+                    
+                    const status = getStatus(item.start, item.end);
+                    if (filters.status === '접수중' && !status.label.includes('OPEN') && !status.label.includes('URGENT')) return false;
+                    if (filters.status === '마감임박' && !status.label.includes('URGENT')) return false;
+                    if (filters.status === '접수예정' && !status.label.includes('UPCOMING')) return false;
+                    if (filters.status === '마감' && !status.label.includes('CLOSED')) return false;
+
+                    if (isPersonaSBTL) {
+                        const keywords = ['소재', '부품', '장비', 'R&D', '기술', '제조', '스마트공장', '수출', '경기', '화성'];
+                        const isRel = keywords.some(k => item.title.includes(k) || item.source.includes(k) || item.category.includes(k));
+                        if (!isRel && item.category !== '정책·규제') return false;
+                    }
+                    return true;
+                }).sort((a, b) => new Date(cleanDate(a.end)) - new Date(cleanDate(b.end)));
+            }, [data, searchTerm, filters, isPersonaSBTL, favorites, showFavOnly]);
+
+            // Grouped Data for Roadmap View
+            const groupedData = useMemo(() => {
+                if (!groupByPhase) return null;
+                const groups = {
+                    'Phase 1: 미래 기술 확보 (R&D/기획)': [],
+                    'Phase 2: 인프라 및 역량 강화 (Build-up)': [],
+                    'Phase 3: 시장 확장 및 도약 (Scale-up)': [],
+                    'Other (기타 지원)': []
+                };
+                filteredData.forEach(item => {
+                    const phase = getPhase(item.category);
+                    if (groups[phase]) groups[phase].push(item);
+                    else groups['Other (기타 지원)'].push(item);
+                });
+                return groups;
+            }, [filteredData, groupByPhase]);
+
+            // Stats
+            const urgentCount = useMemo(() => filteredData.filter(i => getDaysDiff(i.end) >= 0 && getDaysDiff(i.end) <= 7).length, [filteredData]);
+            const sources = useMemo(() => ['전체', ...[...new Set(data.map(i => i.source))].sort()], [data]);
+            const categories = useMemo(() => ['전체', ...[...new Set(data.map(i => i.category))].sort()], [data]);
+
+            const dateStr = useMemo(() => {
+                const d = new Date();
+                return `${d.getFullYear()}. ${String(d.getMonth()+1).padStart(2,'0')}. ${String(d.getDate()).padStart(2,'0')}`;
             }, []);
 
-            const combinedData = useMemo(() => {
-                // 외부 데이터가 존재하고 유효한 경우에만 사용
-                if (externalData.length > 0) {
-                    const processed = externalData.map((item, index) => ({
-                        id: item.id || item.번호 || `ext-${index}`,
-                        start: item.start || item.신청시작일자 || '',
-                        end: item.end || item.신청종료일자 || '',
-                        title: item.title || item.공고명 || '',
-                        source: item.source || item.소관부처 || item.사업수행기관 || '',
-                        url: item.url || item.공고상세URL || '',
-                        category: item.category || item.지원분야 || ''
-                    })).filter(item => item.title && item.title.trim() !== ''); // 제목이 없는 빈 행 필터링
-                    
-                    if (processed.length > 0) return processed;
-                }
-                // 외부 데이터가 없거나 오류 시 기본 데이터(RAW_DATA) 반환
-                return RAW_DATA;
-            }, [externalData]);
-
-            // 전체를 맨 앞으로 정렬
-            const availableSources = useMemo(() => ['전체', ...[...new Set(combinedData.map(d => d.source))].sort()], [combinedData]);
-            const availableCategories = useMemo(() => ['전체', ...[...new Set(combinedData.map(d => d.category))].sort()], [combinedData]);
-
-            useEffect(() => { localStorage.setItem('sbtl_favorites', JSON.stringify(favorites)); }, [favorites]);
-            useEffect(() => { localStorage.setItem('sbtl_memos', JSON.stringify(memos)); }, [memos]);
-
-            const showToast = (message) => { setToast({ show: true, message }); setTimeout(() => setToast({ show: false, message: '' }), 2000); };
-            const toggleFavorite = (id, e) => {
-                if(e) { e.preventDefault(); e.stopPropagation(); }
-                const isAdding = !favorites.includes(id);
-                setFavorites(prev => isAdding ? [...prev, id] : prev.filter(fid => fid !== id));
-                if(isAdding) showToast("즐겨찾기에 추가되었습니다."); else showToast("즐겨찾기가 해제되었습니다.");
-            };
-            const handleMemoChange = (id, text) => { setMemos(prev => ({ ...prev, [id]: text })); };
-            const handleCopy = (item, e) => {
-                if(e) { e.preventDefault(); e.stopPropagation(); }
-                const text = `[공고 공유]\n${item.title}\n마감일: ${item.end}\n링크: ${item.url}`;
-                if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(() => showToast("클립보드에 복사되었습니다.")); }
-                else {
-                    const textArea = document.createElement("textarea"); textArea.value = text; document.body.appendChild(textArea); textArea.select();
-                    try { document.execCommand('copy'); showToast("클립보드에 복사되었습니다."); } catch (err) {}
-                    document.body.removeChild(textArea);
-                }
-            };
-            const downloadCSV = () => {
-                const BOM = '\uFEFF';
-                const rows = filteredData.map(item => [item.id, `"${item.title.replace(/"/g, '""')}"`, item.source, item.category, item.start, item.end, item.url, `"${(memos[item.id] || '').replace(/"/g, '""')}"`]);
-                const csvContent = BOM + ['ID,Title,Source,Category,Start Date,End Date,URL,Memo', ...rows.map(r => r.join(','))].join('\n');
-                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `sbtl_watchlist_${new Date().toISOString().slice(0,10)}.csv`; link.click();
-            };
-            const downloadICS = (item, e) => {
-                if(e) { e.preventDefault(); e.stopPropagation(); }
-                const formatDateICS = (dateStr) => dateStr.replace(/-/g, '');
-                const now = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-                const icsContent = `BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//SBTL//Watchlist//KO\nBEGIN:VEVENT\nUID:${item.id}@sbtl.watchlist\nDTSTAMP:${now}\nDTSTART;VALUE=DATE:${formatDateICS(item.start)}\nDTEND;VALUE=DATE:${formatDateICS(item.end)}\nSUMMARY:${item.title}\nDESCRIPTION:출처: ${item.source}\\n링크: ${item.url}\nURL:${item.url}\nEND:VEVENT\nEND:VCALENDAR`;
-                const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-                const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `event_${item.id}.ics`; link.click();
-            };
-
-            const filteredData = useMemo(() => {
-                return combinedData.filter(item => {
-                    const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase());
-                    const matchesSource = selectedSource === '전체' || item.source === selectedSource;
-                    const matchesCategory = selectedCategory === '전체' || item.category === selectedCategory;
-                    const statusObj = getStatus(item.start, item.end);
-                    const statusLabel = statusObj.label;
-                    let matchesStatus = true;
-                    if (selectedStatus === '접수중') matchesStatus = statusLabel.includes('접수중') || statusLabel.includes('마감임박');
-                    else if (selectedStatus === '마감임박') matchesStatus = statusLabel.includes('마감임박');
-                    else if (selectedStatus === '접수예정') matchesStatus = statusLabel.includes('접수예정');
-                    else if (selectedStatus === '마감') matchesStatus = statusLabel.includes('마감');
-                    let matchesPersona = true;
-                    if (selectedPersona === PERSONAS.SBTL) {
-                        const includeKeywords = ['소재', '부품', '장비', '기술', 'R&D', '전략', '제조', '공급망', '산업', '핵심', '뿌리', '혁신', 'MVP', '메가프로젝트', 'GPU', '컴퓨팅', '탄소중립', 'MOTIE', 'KEITI', 'NIPA', 'KEIT', 'KIAT', '소부장', '으뜸기업', '경기', '화성', '수출', '바우처', '스마트공장', '자율형'];
-                        const excludeKeywords = ['주민참여', '관광', '동래구', '서민', '금융생활', '청년식당'];
-                        const regionKeywords = ['서울', '인천', '제주', '대전', '전남', '충북', '강원', '경북', '경남', '부산', '대구', '울산', '광주', '남양주', '은평', '순천', '보은', '거제', '서귀포'];
-                        const isPriorityRegion = item.title.includes('경기') || item.title.includes('화성') || item.source.includes('경기') || item.source.includes('화성') || item.source.includes('이지비즈');
-                        const isExcludedRegion = regionKeywords.some(r => item.title.includes(r));
-                        const titleMatch = includeKeywords.some(k => item.title.includes(k) || item.source.includes(k));
-                        const excludeMatch = excludeKeywords.some(k => item.title.includes(k));
-                        if (item.category === '정책·규제') matchesPersona = true; 
-                        else matchesPersona = (titleMatch && !excludeMatch && (isPriorityRegion || !isExcludedRegion));
-                    }
-                    let matchesFavorites = true;
-                    if (showFavoritesOnly) matchesFavorites = favorites.includes(item.id);
-                    return matchesSearch && matchesSource && matchesCategory && matchesStatus && matchesPersona && matchesFavorites;
-                }).sort((a, b) => new Date(a.end) - new Date(b.end)); 
-            }, [searchTerm, selectedSource, selectedCategory, selectedStatus, selectedPersona, combinedData, showFavoritesOnly, favorites]);
-
-            const stats = useMemo(() => {
-                const today = getToday();
-                const total = combinedData.length;
-                const active = combinedData.filter(item => new Date(item.start) <= today && new Date(item.end) >= today).length;
-                const upcoming = combinedData.filter(item => new Date(item.start) > today).length;
-                return { total, active, upcoming };
-            }, [combinedData]);
-
-            const urgentItems = useMemo(() => filteredData.filter(item => { const days = getDaysDiff(item.end); return days >= 0 && days <= 7; }), [filteredData]);
-
             return (
-                <div className="min-h-screen font-sans text-slate-900 pb-20 relative">
-                    {urgentItems.length > 0 && (
-                        <div className="bg-amber-100 border-b border-amber-200 px-4 py-2">
-                            <div className="max-w-7xl mx-auto flex items-center justify-center text-sm font-bold text-amber-800 animate-pulse">
-                                <BellIcon className="w-4 h-4 mr-2" />
-                                <span>이번 주 마감 예정인 공고가 {urgentItems.length}건 있습니다! 놓치지 마세요.</span>
-                            </div>
+                <div className="min-h-screen pb-20 selection:bg-blue-100 dark:selection:bg-blue-900">
+                    {/* Status Badge */}
+                    <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/90 dark:bg-slate-800/90 backdrop-blur border border-slate-200 dark:border-slate-700 shadow-lg text-[10px] font-bold text-slate-500 dark:text-slate-400 hover:scale-105 transition-transform cursor-help">
+                        <div className={`w-2 h-2 rounded-full ${dataSource === 'BACKUP' ? 'bg-amber-500' : 'bg-emerald-500 animate-pulse'}`} />
+                        {dataSource === 'BACKUP' ? 'OFFLINE MODE' : dataSource === 'CACHE' ? 'CACHE MODE' : 'LIVE SYNC'}
+                    </div>
+
+                    {/* Toast */}
+                    {toast && (
+                        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 px-4 py-2 bg-slate-800 dark:bg-white text-white dark:text-slate-900 text-xs font-bold rounded-lg shadow-xl animate-fade-in flex items-center gap-2">
+                            <Icons.Zap className="w-3 h-3 text-yellow-400 dark:text-yellow-600" /> {toast}
                         </div>
                     )}
-                    <header className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-30 transition-all duration-300">
-                        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
-                            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                                <div>
-                                    <h1 className="text-2xl font-black flex items-center gap-3 text-slate-900 tracking-tight">
-                                        <div className="bg-gradient-to-br from-indigo-600 to-violet-600 text-white p-2 rounded-xl shadow-lg shadow-indigo-200"><TrendingUp className="h-6 w-6" /></div>
-                                        <span>2026 정부 지원사업 Watchlist<span className="block text-xs font-semibold text-slate-400 mt-0.5 tracking-normal font-sans">Strategic Roadmap for SBTL Advanced Materials (v8.3 Final)</span></span>
-                                    </h1>
+
+                    {/* Header */}
+                    <header className="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors duration-300">
+                        {/* Top Bar */}
+                        <div className="bg-slate-900 dark:bg-black text-slate-300 text-[10px] py-1.5 px-4 flex justify-between items-center">
+                            <div className="flex gap-4">
+                                <span className="font-mono tracking-wide opacity-80">SBTL ADVANCED MATERIALS INTELLIGENCE SYSTEM</span>
+                                {lastUpdated && <span className="font-mono text-slate-500 dark:text-slate-600 hidden sm:inline">Data Updated: {lastUpdated.toLocaleString()}</span>}
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <span className="font-mono font-bold text-white">{dateStr}</span>
+                                <button onClick={() => setIsDark(!isDark)} className="text-slate-400 hover:text-white transition-colors">
+                                    {isDark ? <Icons.Sun className="w-3.5 h-3.5" /> : <Icons.Moon className="w-3.5 h-3.5" />}
+                                </button>
+                            </div>
+                        </div>
+                        
+                        {/* Main Nav */}
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-gradient-to-br from-blue-600 to-indigo-600 text-white p-2 rounded-lg shadow-lg shadow-blue-500/30">
+                                    <Icons.Briefcase className="w-5 h-5" />
                                 </div>
-                                <div className="flex gap-3 text-center items-center">
-                                     <button onClick={downloadCSV} className="flex flex-col items-center justify-center bg-slate-50 hover:bg-green-50 text-slate-500 hover:text-green-600 rounded-xl p-2 min-w-[80px] border border-slate-100 shadow-sm transition-colors group" title="Excel(CSV) 다운로드"><FileSpreadsheet className="w-5 h-5 mb-1 text-slate-400 group-hover:text-green-600 group-hover:scale-110 transition-all" /><span className="text-[10px] font-bold">Export</span></button>
-                                    <div className="w-px h-10 bg-slate-200 mx-1"></div>
-                                    <div className="bg-white rounded-xl p-3 min-w-[90px] border border-slate-100 shadow-sm hover:shadow-md transition-shadow"><div className="text-2xl font-black text-emerald-600 tracking-tighter tabular-nums">{stats.active}</div><div className="text-[11px] uppercase tracking-wider text-slate-400 font-bold">Active</div></div>
-                                    <div className="bg-white rounded-xl p-3 min-w-[90px] border border-slate-100 shadow-sm hover:shadow-md transition-shadow"><div className="text-2xl font-black text-indigo-600 tracking-tighter tabular-nums">{stats.upcoming}</div><div className="text-[11px] uppercase tracking-wider text-slate-400 font-bold">Upcoming</div></div>
+                                <div className="leading-none">
+                                    <div className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-0.5">Gov. Support Watchlist</div>
+                                    <h1 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">2026 정부 지원사업</h1>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-4">
+                                <div className="hidden md:flex items-center gap-4 mr-4">
+                                    <div className="text-right">
+                                        <div className="text-[10px] text-slate-400 font-bold uppercase">Active Projects</div>
+                                        <div className="text-lg font-black text-slate-800 dark:text-white leading-none tabular-nums">{filteredData.length}</div>
+                                    </div>
+                                    <div className="w-px h-8 bg-slate-100 dark:bg-slate-800"></div>
+                                    <div className="text-right">
+                                        <div className="text-[10px] text-rose-400 font-bold uppercase">Urgent (D-7)</div>
+                                        <div className="text-lg font-black text-rose-500 leading-none tabular-nums">{urgentCount}</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </header>
-                    <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-                        <div className="flex justify-center mb-8">
-                            <div className="bg-slate-100 p-1.5 rounded-2xl flex gap-1 shadow-inner">
-                                <button onClick={() => setMainTab('list')} className={`px-8 py-3 rounded-xl text-sm font-bold transition-all flex items-center gap-2 ${mainTab === 'list' ? 'bg-white text-indigo-600 shadow-sm ring-1 ring-black/5' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'}`}><List className="w-4 h-4" /> 공고 리스트</button>
-                                <button onClick={() => setMainTab('calendar')} className={`px-8 py-3 rounded-xl text-sm font-bold transition-all flex items-center gap-2 ${mainTab === 'calendar' ? 'bg-white text-indigo-600 shadow-sm ring-1 ring-black/5' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'}`}><CalendarIcon className="w-4 h-4" /> 월별 일정</button>
+
+                    {/* Main Content */}
+                    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+                        
+                        {/* Large View Toggle */}
+                        <div className="flex justify-center pb-2">
+                            <div className="bg-slate-200/50 dark:bg-slate-800/50 p-1.5 rounded-2xl flex gap-1 backdrop-blur-sm border border-slate-200/50 dark:border-slate-700/50 shadow-inner">
+                                <button 
+                                    onClick={() => setViewMode('grid')} 
+                                    className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-200 ${viewMode !== 'calendar' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm ring-1 ring-black/5 dark:ring-white/5 scale-100' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-white/50 dark:hover:bg-slate-700/50 scale-95'}`}
+                                >
+                                    <Icons.Grid className="w-4 h-4" />
+                                    공고 리스트
+                                </button>
+                                <button 
+                                    onClick={() => setViewMode('calendar')} 
+                                    className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-200 ${viewMode === 'calendar' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm ring-1 ring-black/5 dark:ring-white/5 scale-100' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-white/50 dark:hover:bg-slate-700/50 scale-95'}`}
+                                >
+                                    <Icons.Calendar className="w-4 h-4" />
+                                    월별 캘린더
+                                </button>
                             </div>
                         </div>
-                        {mainTab === 'list' && (
-                            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-1 mb-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                                <div className="flex flex-col lg:flex-row gap-0">
-                                    <div className="relative flex-1"><div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none"><Search className="h-5 w-5 text-slate-400" /></div><input type="text" className="block w-full pl-12 pr-4 py-4 rounded-xl leading-5 bg-transparent placeholder-slate-400 focus:outline-none focus:bg-slate-50 transition-colors text-sm font-medium" placeholder="공고명, 기관명, 키워드 검색..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} /></div>
-                                    <div className="w-px bg-slate-100 my-2 hidden lg:block"></div>
-                                    <div className="flex flex-wrap items-center gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100">
-                                        <div className="flex flex-col gap-1"><label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">소관부처/기관</label><div className="relative"><select value={selectedSource} onChange={(e) => setSelectedSource(e.target.value)} className="appearance-none bg-white border border-slate-200 text-slate-700 py-2 pl-3 pr-8 rounded-lg text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent cursor-pointer hover:bg-slate-50 transition-colors w-full min-w-[140px]">{availableSources.map(source => (<option key={source} value={source}>{source}</option>))}</select><ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-slate-400 pointer-events-none" /></div></div>
-                                        <div className="flex flex-col gap-1"><label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">지원분야</label><div className="relative"><select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="appearance-none bg-white border border-slate-200 text-slate-700 py-2 pl-3 pr-8 rounded-lg text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent cursor-pointer hover:bg-slate-50 transition-colors w-full min-w-[140px]">{availableCategories.map(cat => (<option key={cat} value={cat}>{cat}</option>))}</select><ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-slate-400 pointer-events-none" /></div></div>
-                                        <div className="flex flex-col gap-1"><label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">접수상태</label><div className="relative"><select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)} className="appearance-none bg-white border border-slate-200 text-slate-700 py-2 pl-3 pr-8 rounded-lg text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent cursor-pointer hover:bg-slate-50 transition-colors w-full min-w-[140px]">{STATUSES.map(status => (<option key={status} value={status}>{status}</option>))}</select><ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-slate-400 pointer-events-none" /></div></div>
-                                        <div className="flex flex-col gap-1"><label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">즐겨찾기</label><button onClick={() => setShowFavoritesOnly(!showFavoritesOnly)} className={`h-[34px] px-3 rounded-lg border transition-colors flex items-center justify-center gap-1.5 ${showFavoritesOnly ? 'bg-amber-50 border-amber-200 text-amber-600 font-bold' : 'bg-white border-slate-200 text-slate-500 hover:text-amber-500'}`} title="즐겨찾기만 보기"><Star className={`w-3.5 h-3.5 ${showFavoritesOnly ? 'fill-current' : ''}`} /><span className="text-xs">모아보기</span></button></div>
-                                        <div className="flex flex-col gap-1"><label className="text-[10px] font-bold text-transparent select-none">초기화</label><button onClick={() => {setSearchTerm(''); setSelectedSource('전체'); setSelectedCategory('전체'); setSelectedStatus('전체'); setSelectedPersona(PERSONAS.ALL); setShowFavoritesOnly(false);}} className="h-[34px] px-3 rounded-lg bg-white border border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50 transition-colors flex items-center justify-center" title="필터 초기화"><RefreshCw className="w-3 h-3" /><span className="ml-1.5 text-xs font-bold">초기화</span></button></div>
-                                    </div>
+
+                        {/* Control Panel */}
+                        <div className="glass-panel rounded-xl p-1 shadow-sm">
+                            <div className="flex flex-col lg:flex-row gap-2">
+                                {/* Search */}
+                                <div className="relative flex-1">
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><Icons.Search className="w-4 h-4 text-slate-400" /></div>
+                                    <input 
+                                        type="text" 
+                                        className="w-full h-12 pl-11 pr-4 bg-transparent text-sm font-medium placeholder-slate-400 focus:outline-none text-slate-800 dark:text-slate-200"
+                                        placeholder="키워드, 기관명, 공고명 검색..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                    />
                                 </div>
-                                <div className="w-px bg-slate-100 my-2 hidden lg:block"></div>
-                                <div className="flex items-center gap-1 p-2 justify-end">
-                                    <button onClick={() => setViewMode('grid')} className={`p-2.5 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-slate-100 text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'}`} title="카드 뷰"><LayoutGrid className="h-5 w-5" /></button>
-                                    <button onClick={() => setViewMode('list')} className={`p-2.5 rounded-lg transition-all ${viewMode === 'list' ? 'bg-slate-100 text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'}`} title="리스트 뷰"><List className="h-5 w-5" /></button>
+                                <div className="w-px bg-slate-200 dark:bg-slate-700 my-2 hidden lg:block"></div>
+                                
+                                {/* Filters */}
+                                <div className="flex items-center gap-2 p-2 overflow-x-auto">
+                                    <select className="h-8 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 text-xs font-bold text-slate-600 dark:text-slate-300 focus:outline-none focus:border-blue-500 cursor-pointer min-w-[120px]" 
+                                        value={filters.source} onChange={e => setFilters({...filters, source: e.target.value})}>
+                                        {sources.map(s => <option key={s} value={s}>{s}</option>)}
+                                    </select>
+                                    <select className="h-8 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 text-xs font-bold text-slate-600 dark:text-slate-300 focus:outline-none focus:border-blue-500 cursor-pointer min-w-[120px]"
+                                        value={filters.category} onChange={e => setFilters({...filters, category: e.target.value})}>
+                                        {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                                    </select>
+                                    <select className="h-8 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 text-xs font-bold text-slate-600 dark:text-slate-300 focus:outline-none focus:border-blue-500 cursor-pointer min-w-[100px]"
+                                        value={filters.status} onChange={e => setFilters({...filters, status: e.target.value})}>
+                                        {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+                                    </select>
+                                    <button onClick={() => setGroupByPhase(!groupByPhase)} className={`h-8 px-4 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all whitespace-nowrap ${groupByPhase ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200' : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-indigo-300'}`}>
+                                        <Icons.Layers className="w-3 h-3" /> 로드맵 뷰
+                                    </button>
+                                    <button onClick={() => setIsPersonaSBTL(!isPersonaSBTL)} className={`h-8 px-4 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all whitespace-nowrap ${isPersonaSBTL ? 'bg-blue-600 text-white shadow-md shadow-blue-200' : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-blue-300'}`}>
+                                        <Icons.Sparkles className="w-3 h-3" /> SBTL 맞춤
+                                    </button>
+                                    <button onClick={() => setShowFavOnly(!showFavOnly)} className={`h-8 w-8 flex items-center justify-center rounded-lg border transition-all ${showFavOnly ? 'bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800 text-amber-500' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400 hover:text-amber-400'}`}>
+                                        <Icons.Star className={`w-4 h-4 ${showFavOnly ? 'fill-current' : ''}`} />
+                                    </button>
                                 </div>
                             </div>
-                        )}
-                        {mainTab === 'list' && (
-                            <div className="mb-8 flex flex-wrap gap-3 justify-center md:justify-start">
-                                <button onClick={() => setSelectedPersona(PERSONAS.ALL)} className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-200 shadow-sm hover:shadow-md ${selectedPersona === PERSONAS.ALL ? 'bg-slate-800 text-white ring-2 ring-slate-800 ring-offset-2' : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50 hover:text-slate-800'}`}>전체 보기</button>
-                                <button onClick={() => setSelectedPersona(PERSONAS.SBTL)} className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-200 shadow-sm hover:shadow-md ${selectedPersona === PERSONAS.SBTL ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white ring-2 ring-indigo-500 ring-offset-2' : 'bg-white text-slate-500 border border-slate-200 hover:bg-indigo-50 hover:text-indigo-600 hover:border-indigo-100'}`}><Sparkles className="w-4 h-4" />SBTL 첨단소재 맞춤</button>
-                            </div>
-                        )}
-                        {loading && <div className="text-center py-4 text-slate-500">데이터를 불러오는 중...</div>}
-                        {error && <div className="text-center py-4 text-red-500">{error}</div>}
-                        {mainTab === 'list' && (
-                            <div className="flex justify-between items-center mb-6 px-2">
-                                <div className="flex items-center gap-3"><span className="text-sm font-bold text-slate-700">검색 결과 <span className="text-indigo-600 ml-1 tabular-nums">{filteredData.length}</span>건</span>{selectedPersona !== PERSONAS.ALL && (<span className="flex items-center gap-1.5 text-[10px] font-bold bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-full border border-indigo-100 uppercase tracking-wide"><Sparkles className="w-3 h-3" />SBTL Filter Active</span>)}{showFavoritesOnly && (<span className="flex items-center gap-1.5 text-[10px] font-bold bg-amber-50 text-amber-600 px-2.5 py-1 rounded-full border border-amber-100 uppercase tracking-wide"><Star className="w-3 h-3 fill-current" />Favorites</span>)}</div>
-                                <div className="text-xs text-slate-400 font-medium hidden sm:block tabular-nums">Last updated: {new Date().toISOString().split('T')[0]}</div>
-                            </div>
-                        )}
-                        {mainTab === 'calendar' && (<div className="animate-in fade-in slide-in-from-bottom-4 duration-500"><CalendarView data={filteredData} favorites={favorites} toggleFavorite={toggleFavorite} downloadICS={downloadICS} onCopy={handleCopy} /></div>)}
-                        {mainTab === 'list' && viewMode === 'grid' && (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                {filteredData.map((item) => {
-                                    const status = getStatus(item.start, item.end);
-                                    const linkInfo = getLinkInfo(item);
-                                    const isFavorite = favorites.includes(item.id);
-                                    const sbtlKeyword = (item.title.includes('소부장') || item.title.includes('화성') || item.title.includes('수출') || item.title.includes('기술개발'));
-                                    return (
-                                        <div key={item.id} className="group relative bg-white rounded-2xl border border-slate-200/80 overflow-hidden hover:shadow-xl hover:shadow-indigo-500/10 hover:border-indigo-500/30 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full">
-                                            <div className={`absolute top-0 left-0 h-1.5 w-full bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-500`} />
-                                            <div className="absolute top-4 right-4 flex gap-2 z-10">
-                                                <button onClick={(e) => handleCopy(item, e)} className="p-1.5 bg-white rounded-full border border-slate-200 text-slate-400 hover:text-indigo-600 hover:border-indigo-200 shadow-sm transition-colors" title="복사"><CopyIcon className="w-4 h-4" /></button>
-                                                <a href={getGoogleCalendarUrl(item)} target="_blank" rel="noreferrer" className="p-1.5 bg-white rounded-full border border-slate-200 text-slate-400 hover:text-indigo-600 hover:border-indigo-200 shadow-sm transition-colors flex items-center justify-center w-7 h-7 font-bold text-xs" title="구글 캘린더 등록">G</a>
-                                                <button onClick={(e) => downloadICS(item, e)} className="p-1.5 bg-white rounded-full border border-slate-200 text-slate-400 hover:text-indigo-600 hover:border-indigo-200 shadow-sm transition-colors" title="파일 다운로드 (.ics)"><CalendarIcon className="w-4 h-4" /></button>
-                                                <button onClick={(e) => toggleFavorite(item.id, e)} className={`p-1.5 bg-white rounded-full border shadow-sm transition-colors ${isFavorite ? 'text-amber-400 border-amber-200' : 'text-slate-300 border-slate-200 hover:text-amber-400 hover:border-amber-200'}`} title="즐겨찾기"><Star className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} /></button>
+                        </div>
+
+                        {/* Views */}
+                        {loading ? (
+                            <div className="text-center py-20"><div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div><p className="text-slate-400 text-sm font-medium">데이터 시스템 연동 중...</p></div>
+                        ) : viewMode === 'calendar' ? (
+                            <CalendarView data={filteredData} favorites={favorites} toggleFavorite={toggleFav} />
+                        ) : groupByPhase ? (
+                            <div className="space-y-8 animate-fade-in">
+                                {['Phase 1: 미래 기술 확보 (R&D/기획)', 'Phase 2: 인프라 및 역량 강화 (Build-up)', 'Phase 3: 시장 확장 및 도약 (Scale-up)', 'Other (기타 지원)'].map(phase => (
+                                    groupedData[phase]?.length > 0 && (
+                                        <div key={phase}>
+                                            <div className="flex items-center gap-4 mb-4">
+                                                <h3 className="text-lg font-black text-slate-800 dark:text-slate-100">{phase}</h3>
+                                                <div className="h-px flex-1 bg-slate-200 dark:bg-slate-800"></div>
+                                                <span className="text-xs font-bold text-slate-400">{groupedData[phase].length}건</span>
                                             </div>
-                                            <a href={linkInfo.url} target="_blank" rel="noreferrer" className="flex-1 flex flex-col p-6 cursor-pointer">
-                                                <div className="flex flex-wrap gap-2 mb-3 pr-32">
-                                                    <span className={`inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide border shadow-sm ${status.color}`}>{status.label}</span>
-                                                    <span className="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold text-slate-600 bg-slate-50 border border-slate-200">{item.source}</span>
-                                                    <span className="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-100">{item.category}</span>
-                                                    {sbtlKeyword && (<span className="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold text-pink-600 bg-pink-50 border border-pink-100">추천</span>)}
-                                                </div>
-                                                <h3 className="text-[17px] font-bold text-slate-800 leading-snug mb-4 group-hover:text-indigo-600 transition-colors break-keep tracking-tight line-clamp-2 h-[3.2em]">{item.title}</h3>
-                                                <div className="mt-auto pt-4 border-t border-slate-50">
-                                                    <div className="flex flex-col gap-1.5 text-sm">
-                                                        <div className="flex justify-between items-center"><span className="text-slate-400 font-bold text-[10px] uppercase tracking-wider">Start</span><span className="font-mono text-slate-600 font-semibold tracking-tight tabular-nums">{formatDate(item.start, item.displayDate?.split(' ~ ')[0])}</span></div>
-                                                        <div className="flex justify-between items-center"><span className="text-slate-400 font-bold text-[10px] uppercase tracking-wider">End</span><span className={`font-mono font-bold tracking-tight tabular-nums ${status.label.includes('마감임박') ? 'text-rose-600' : 'text-slate-800'}`}>{formatDate(item.end, item.displayDate?.split(' ~ ')[1])}</span></div>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <div className="px-6 pb-6 pt-0">
-                                                <div className="relative">
-                                                    <div className="absolute top-2.5 left-3 text-slate-400 pointer-events-none"><Edit3 className="w-3 h-3" /></div>
-                                                    <textarea className="memo-area w-full bg-slate-50 border border-slate-200 rounded-lg py-2 pl-8 pr-3 text-xs text-slate-600 placeholder-slate-400 focus:outline-none resize-none" rows="1" placeholder="메모를 입력하세요..." value={memos[item.id] || ''} onChange={(e) => handleMemoChange(item.id, e.target.value)} onClick={(e) => e.stopPropagation()} />
-                                                </div>
+                                            <div className="grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                                                {groupedData[phase].map(item => {
+                                                    const status = getStatus(item.start, item.end);
+                                                    const isFav = favorites.includes(item.id);
+                                                    return <ItemCard key={item.id} item={item} status={status} isFav={isFav} toggleFav={toggleFav} copyLink={copyLink} />;
+                                                })}
                                             </div>
                                         </div>
-                                    );
+                                    )
+                                ))}
+                            </div>
+                        ) : (
+                            <div className={`grid gap-5 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
+                                {filteredData.map(item => {
+                                    const status = getStatus(item.start, item.end);
+                                    const isFav = favorites.includes(item.id);
+                                    
+                                    if(viewMode === 'list') {
+                                        return (
+                                            <div key={item.id} className="tech-card rounded-xl p-4 flex items-center gap-4 hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-800 border dark:border-slate-800">
+                                                <div className={`w-1.5 self-stretch rounded-full ${status.label.includes('URGENT') ? 'bg-rose-500' : 'bg-blue-500'}`}></div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${status.color}`}>{status.label}</span>
+                                                        <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400">{item.source}</span>
+                                                    </div>
+                                                    <a href={item.url} target="_blank" className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate block hover:text-blue-600 dark:hover:text-blue-400">{item.title}</a>
+                                                </div>
+                                                <div className="text-right hidden sm:block">
+                                                    <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Deadline</div>
+                                                    <div className="font-mono text-sm font-bold text-slate-700 dark:text-slate-300">{formatDate(item.end)}</div>
+                                                </div>
+                                                <div className="flex gap-1">
+                                                    <button onClick={() => toggleFav(item.id)} className={`p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 ${isFav ? 'text-amber-400' : 'text-slate-300'}`}><Icons.Star className={`w-4 h-4 ${isFav ? 'fill-current' : ''}`} /></button>
+                                                    <a href={item.url} target="_blank" className="p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400"><Icons.ExternalLink className="w-4 h-4" /></a>
+                                                </div>
+                                            </div>
+                                        )
+                                    }
+
+                                    return <ItemCard key={item.id} item={item} status={status} isFav={isFav} toggleFav={toggleFav} copyLink={copyLink} />;
                                 })}
                             </div>
                         )}
-                        {mainTab === 'list' && viewMode === 'list' && (
-                            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                <div className="overflow-x-auto">
-                                    <table className="w-full text-sm text-left text-slate-600">
-                                        <thead className="text-xs text-slate-700 uppercase bg-slate-50 border-b border-slate-200">
-                                            <tr>
-                                                <th scope="col" className="px-4 py-3 whitespace-nowrap font-bold">상태</th>
-                                                <th scope="col" className="px-4 py-3 whitespace-nowrap font-bold">소관부처</th>
-                                                <th scope="col" className="px-4 py-3 whitespace-nowrap font-bold">지원분야</th>
-                                                <th scope="col" className="px-4 py-3 min-w-[300px] font-bold">공고명</th>
-                                                <th scope="col" className="px-4 py-3 whitespace-nowrap text-center font-bold">마감일</th>
-                                                <th scope="col" className="px-4 py-3 whitespace-nowrap text-center font-bold">관리</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {filteredData.map((item) => {
-                                                const status = getStatus(item.start, item.end);
-                                                const linkInfo = getLinkInfo(item);
-                                                const isFavorite = favorites.includes(item.id);
-                                                return (
-                                                    <tr key={item.id} className="bg-white border-b border-slate-100 hover:bg-slate-50 transition-colors group">
-                                                        <td className="px-4 py-3 whitespace-nowrap"><span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold border ${status.color}`}>{status.label}</span></td>
-                                                        <td className="px-4 py-3 whitespace-nowrap font-medium text-slate-900 tracking-tight">{item.source}</td>
-                                                        <td className="px-4 py-3 whitespace-nowrap text-indigo-600 font-medium tracking-tight">{item.category}</td>
-                                                        <td className="px-4 py-3"><a href={linkInfo.url} target="_blank" rel="noreferrer" className="text-slate-800 font-bold hover:text-indigo-600 hover:underline flex items-center gap-2 tracking-tight">{item.title}<ExternalLink className="w-3 h-3 text-slate-400" /></a></td>
-                                                        <td className="px-4 py-3 whitespace-nowrap text-center font-mono font-medium text-slate-600 tabular-nums">{formatDate(item.end, item.displayDate?.split(' ~ ')[1])}</td>
-                                                        <td className="px-4 py-3 whitespace-nowrap text-center">
-                                                            <div className="flex items-center justify-center gap-2">
-                                                                <button onClick={(e) => handleCopy(item, e)} className="text-slate-300 hover:text-slate-600 p-1 rounded-full hover:bg-slate-100 transition-colors" title="복사"><CopyIcon className="w-4 h-4" /></button>
-                                                                <a href={getGoogleCalendarUrl(item)} target="_blank" rel="noreferrer" className="text-slate-400 hover:text-indigo-600 font-bold text-xs p-1" title="구글 캘린더">G</a>
-                                                                <button onClick={(e) => toggleFavorite(item.id, e)} className={`transition-colors p-1 rounded-full hover:bg-slate-100 ${isFavorite ? 'text-amber-400' : 'text-slate-300 hover:text-amber-400'}`}><Star className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} /></button>
-                                                                <button onClick={(e) => downloadICS(item, e)} className="text-slate-300 hover:text-indigo-600 p-1 rounded-full hover:bg-slate-100 transition-colors"><CalendarIcon className="w-4 h-4" /></button>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                );
-                                            })}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        )}
-                        {mainTab === 'list' && filteredData.length === 0 && (
-                            <div className="text-center py-24 bg-white rounded-3xl border-2 border-dashed border-slate-200">
-                                <div className="bg-slate-50 p-4 rounded-full inline-block mb-4"><Search className="h-8 w-8 text-slate-400" /></div>
-                                <h3 className="text-lg font-bold text-slate-900">검색 결과가 없습니다</h3>
-                                <p className="mt-2 text-sm text-slate-500">다른 키워드로 검색하거나 필터를 초기화해보세요.</p>
-                                <button onClick={() => {setSearchTerm(''); setSelectedSource('전체'); setSelectedCategory('전체'); setSelectedStatus('전체'); setSelectedPersona(PERSONAS.ALL); setShowFavoritesOnly(false);}} className="mt-6 text-sm font-bold text-indigo-600 hover:text-indigo-700 underline">필터 초기화</button>
+                        
+                        {/* Empty State */}
+                        {!loading && filteredData.length === 0 && (
+                            <div className="text-center py-20 bg-white dark:bg-slate-900 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl">
+                                <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-full inline-block mb-4"><Icons.Search className="w-8 h-8 text-slate-400" /></div>
+                                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200">검색 결과가 없습니다</h3>
+                                <button onClick={() => {setSearchTerm(''); setFilters({source:'전체', category:'전체', status:'전체'}); setIsPersonaSBTL(false);}} 
+                                    className="mt-4 px-4 py-2 bg-slate-800 dark:bg-slate-700 text-white text-sm font-bold rounded-lg hover:bg-slate-700 transition-colors">
+                                    필터 초기화
+                                </button>
                             </div>
                         )}
                     </main>
-                    {toast.show && (<div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full shadow-lg text-sm font-bold flex items-center gap-2 z-50 toast-enter"><span className="text-indigo-400">✨</span> {toast.message}</div>)}
                 </div>
             );
         };
